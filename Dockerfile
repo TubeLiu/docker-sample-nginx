@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM index.alauda.cn/library/ubuntu:latest
 MAINTAINER TubeLiu "tubeliu@gmail.com"
 ENV REFRESHED_AT 2017-04-26
 RUN apt-get update
