@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: alauda
+  name: docker-sample-liuzijiao
+spec:
+  template:
+    metadata:
+      labels:
+        service.alauda.io/name: docker-sample-liuzijiao
+    spec:
+      affinity: {}
+      containers:
+        - name: docker-sample-liuzijiao-0
+          image: 'index.alauda.cn/demo100/docker-sample-nginx:latest'
+          imagePullPolicy: Always
+          command:
+            - nginx
+          envFrom:
+            - configMapRef:
+                name: testconfig
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: volume-0-0
+      hostNetwork: false
+      volumes:
+      - configMap:
+          items:
+          - key: global
+            path: global.conf
+          name: testconfig
+        name: volume-0-0
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: docker-sample-liuzijiao-0
+  namespace: alauda
+  annotations:
+    loadbalancer.alauda.io/bind: >-
+      [{"container_port":80,"protocol":"http","name":"nginx-13-75-47-198","port":80}]
+spec:
+  selector:
+    service.alauda.io/name: docker-sample-liuzijiao
+  ports:
+    - name: http-0
+      protocol: TCP
+      port: 80
+      targetPort: 80
+      
